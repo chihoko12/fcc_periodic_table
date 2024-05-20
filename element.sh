@@ -1,13 +1,12 @@
 #!/bin/bash
+PSQL="psql --username=freecodecamp --dbname=periodic_table -t --no-align -c"
 
 # input validation
 if [[ -z $1 ]]
 then
   echo "Please provide an element as an argument."
-  exit 1
+  exit
 fi
-
-PSQL="psql --username=freecodecamp --dbname=periodic_table -t --no-align -c"
 
 # Determine the type of the input and create the appropriate SQL query
 if [[ $1 =~ ^[0-9]+$ ]]
@@ -15,16 +14,17 @@ then
   RESULT=$($PSQL "SELECT e.atomic_number, e.symbol, e.name, p.atomic_mass, p.melting_point_celsius, p.boiling_point_celsius, t.type FROM elements e INNER JOIN properties p ON e.atomic_number = p.atomic_number INNER JOIN types t ON p.type_id = t.type_id WHERE e.atomic_number = $1;")
 elif [[ $1 =~ ^[a-zA-Z]+$ ]]
 then
+#else
   RESULT=$($PSQL "SELECT e.atomic_number, e.symbol, e.name, p.atomic_mass, p.melting_point_celsius, p.boiling_point_celsius, t.type FROM elements e INNER JOIN properties p ON e.atomic_number = p.atomic_number INNER JOIN types t ON p.type_id = t.type_id WHERE e.symbol = '$1' OR e.name = '$1';")
 else
   echo "I could not find that element in the database."
-  exit 2
+  exit
 fi
 
 if [[ -z $RESULT ]]
 then
   echo "I could not find that element in the database."
-  exit 3
+  exit
 fi
 
 # Extracting the fields from the result

@@ -15,7 +15,7 @@ then
   RESULT=$($PSQL "SELECT e.atomic_number, e.symbol, e.name, p.atomic_mass, p.melting_point_celsius, p.boiling_point_celsius, t.type FROM elements e INNER JOIN properties p ON e.atomic_number = p.atomic_number INNER JOIN types t ON p.type_id = t.type_id WHERE e.atomic_number = $1;")
 elif [[ $1 =~ ^[a-zA-Z]+$ ]]
 then
-  RESULT=$($PSQL "SELECT e.atomic_number, e.symbol, e.name, p.atomic_mass, p.melting_point_celsius, p.boiling_point_celsius, t.type FROM elements e INNER JOIN properties p ON e.atomic_number = p.atomic_number INNER JOIN types t ON p.type_id = t.type_id WHERE e.symbol ILIKE '$1' OR e.name ILIKE '$1';")
+  RESULT=$($PSQL "SELECT e.atomic_number, e.symbol, e.name, p.atomic_mass, p.melting_point_celsius, p.boiling_point_celsius, t.type FROM elements e INNER JOIN properties p ON e.atomic_number = p.atomic_number INNER JOIN types t ON p.type_id = t.type_id WHERE e.symbol = '$1' OR e.name = '$1';")
 else
   echo "I could not find that element in the database."
   exit 2
@@ -26,8 +26,6 @@ then
   echo "I could not find that element in the database."
   exit 3
 fi
-
-#echo "$RESULT"
 
 # Extracting the fields from the result
 IFS='|' read -r atomic_number symbol name atomic_mass melting_point_celsius boiling_point_celsius type <<< "$RESULT" 
